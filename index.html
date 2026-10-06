@@ -1,0 +1,2896 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ENKMINA2 AUDIO LAB</title>
+
+<meta
+  name="description"
+  content="Conversión, análisis y procesamiento profesional de audio. Procesamiento local en el navegador."
+>
+
+<style>
+
+:root{
+    --bg:#07090d;
+    --bg2:#0c1017;
+    --panel:#10151d;
+    --panel2:#151b24;
+    --border:#252d39;
+    --text:#f2f5f8;
+    --muted:#8993a3;
+    --accent:#8b5cf6;
+    --accent2:#6d28d9;
+    --green:#22c55e;
+    --yellow:#f59e0b;
+    --red:#ef4444;
+    --blue:#38bdf8;
+    --shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    background:
+        radial-gradient(circle at 15% 0%,rgba(139,92,246,.13),transparent 30%),
+        radial-gradient(circle at 90% 20%,rgba(56,189,248,.08),transparent 25%),
+        var(--bg);
+    color:var(--text);
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    min-height:100vh;
+}
+
+button,
+select,
+input{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.app{
+    width:min(1450px,94%);
+    margin:auto;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:28px 0 24px;
+    gap:20px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.logo{
+    width:48px;
+    height:48px;
+    border-radius:14px;
+    display:grid;
+    place-items:center;
+    background:
+        linear-gradient(135deg,var(--accent),#3b82f6);
+    box-shadow:
+        0 0 35px rgba(139,92,246,.35);
+    font-size:22px;
+    font-weight:900;
+}
+
+.brand h1{
+    margin:0;
+    font-size:20px;
+    letter-spacing:.04em;
+}
+
+.brand p{
+    margin:4px 0 0;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.status-pill{
+    border:1px solid rgba(34,197,94,.25);
+    color:#8ef0ae;
+    background:rgba(34,197,94,.08);
+    border-radius:999px;
+    padding:8px 13px;
+    font-size:12px;
+    white-space:nowrap;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+    padding:40px 0 28px;
+}
+
+.hero h2{
+    margin:0;
+    font-size:clamp(32px,5vw,62px);
+    line-height:1;
+    letter-spacing:-.04em;
+}
+
+.hero h2 span{
+    background:linear-gradient(
+        90deg,
+        #fff,
+        #b8a4ff,
+        #63c8ff
+    );
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.hero p{
+    max-width:750px;
+    color:var(--muted);
+    line-height:1.7;
+    margin:18px 0 0;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.card{
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.035),
+            rgba(255,255,255,.012)
+        ),
+        var(--panel);
+    border:1px solid var(--border);
+    border-radius:20px;
+    box-shadow:var(--shadow);
+}
+
+.card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    padding:20px 22px;
+    border-bottom:1px solid var(--border);
+}
+
+.card-header h3{
+    margin:0;
+    font-size:16px;
+}
+
+.card-header p{
+    margin:5px 0 0;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.card-body{
+    padding:22px;
+}
+
+/* =========================
+   DROPZONE
+========================= */
+
+.dropzone{
+    border:1.5px dashed #3a4454;
+    border-radius:18px;
+    padding:48px 25px;
+    text-align:center;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(139,92,246,.09),
+            transparent 60%
+        );
+    transition:.25s ease;
+}
+
+.dropzone:hover,
+.dropzone.dragover{
+    border-color:var(--accent);
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(139,92,246,.16),
+            transparent 65%
+        );
+    transform:translateY(-1px);
+}
+
+.drop-icon{
+    width:64px;
+    height:64px;
+    margin:auto;
+    border-radius:18px;
+    display:grid;
+    place-items:center;
+    background:rgba(139,92,246,.12);
+    color:#c4b5fd;
+    font-size:28px;
+}
+
+.dropzone h3{
+    margin:18px 0 7px;
+}
+
+.dropzone p{
+    color:var(--muted);
+    margin:0 0 20px;
+    font-size:13px;
+}
+
+.file-input{
+    display:none;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.btn{
+    border:1px solid var(--border);
+    background:#171d27;
+    color:var(--text);
+    padding:11px 16px;
+    border-radius:11px;
+    transition:.2s ease;
+    font-weight:600;
+}
+
+.btn:hover{
+    border-color:#465164;
+    transform:translateY(-1px);
+}
+
+.btn.primary{
+    background:
+        linear-gradient(
+            135deg,
+            var(--accent),
+            var(--accent2)
+        );
+    border-color:transparent;
+}
+
+.btn.primary:hover{
+    box-shadow:0 10px 30px rgba(109,40,217,.3);
+}
+
+.btn.success{
+    background:rgba(34,197,94,.12);
+    border-color:rgba(34,197,94,.3);
+    color:#9af3b7;
+}
+
+.btn:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+    transform:none;
+}
+
+/* =========================
+   FILE INFO
+========================= */
+
+.file-info{
+    display:none;
+    margin-top:18px;
+}
+
+.file-info.active{
+    display:block;
+}
+
+.file-title{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.file-title strong{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.file-title span{
+    color:var(--muted);
+    font-size:12px;
+}
+
+/* =========================
+   PLAYER
+========================= */
+
+audio{
+    width:100%;
+    margin:10px 0 18px;
+}
+
+.wave-container{
+    background:#080b10;
+    border:1px solid #1d2530;
+    border-radius:14px;
+    overflow:hidden;
+}
+
+#waveform{
+    width:100%;
+    height:180px;
+    display:block;
+}
+
+/* =========================
+   GRID
+========================= */
+
+.grid{
+    display:grid;
+    gap:18px;
+}
+
+.grid-2{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+.grid-3{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+}
+
+.grid-4{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+}
+
+section{
+    margin-bottom:20px;
+}
+
+/* =========================
+   METRICS
+========================= */
+
+.metric{
+    padding:18px;
+    background:rgba(255,255,255,.025);
+    border:1px solid var(--border);
+    border-radius:14px;
+}
+
+.metric-label{
+    color:var(--muted);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+}
+
+.metric-value{
+    margin-top:8px;
+    font-size:22px;
+    font-weight:700;
+}
+
+.metric-value.small{
+    font-size:17px;
+}
+
+/* =========================
+   CONVERTER
+========================= */
+
+.control{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.control label{
+    font-size:12px;
+    color:var(--muted);
+}
+
+select{
+    background:#0b1017;
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:11px 12px;
+    outline:none;
+}
+
+select:focus{
+    border-color:var(--accent);
+}
+
+.converter-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:18px;
+}
+
+/* =========================
+   FEATURE CARDS
+========================= */
+
+.feature{
+    padding:22px;
+    min-height:180px;
+    display:flex;
+    flex-direction:column;
+}
+
+.feature-icon{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+    background:rgba(139,92,246,.1);
+    color:#c4b5fd;
+    font-size:20px;
+    margin-bottom:18px;
+}
+
+.feature h4{
+    margin:0 0 8px;
+}
+
+.feature p{
+    margin:0;
+    color:var(--muted);
+    line-height:1.55;
+    font-size:13px;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    width:max-content;
+    margin-top:auto;
+    padding:5px 9px;
+    border-radius:999px;
+    background:rgba(245,158,11,.1);
+    border:1px solid rgba(245,158,11,.2);
+    color:#f7c76b;
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:.07em;
+}
+
+/* =========================
+   SEPARATOR
+========================= */
+
+.separator{
+    border:1px solid rgba(139,92,246,.25);
+    background:
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(139,92,246,.12),
+            transparent 40%
+        ),
+        #0c1017;
+}
+
+.separator-content{
+    padding:25px;
+}
+
+.separator-grid{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:25px;
+    align-items:center;
+}
+
+.separator h3{
+    margin:0 0 8px;
+}
+
+.separator p{
+    margin:0;
+    color:var(--muted);
+    line-height:1.6;
+    max-width:750px;
+}
+
+.ai-state{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#c4b5fd;
+    font-size:12px;
+    margin-top:15px;
+}
+
+.ai-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--yellow);
+    box-shadow:0 0 12px rgba(245,158,11,.6);
+}
+
+/* =========================
+   LOG
+========================= */
+
+.log{
+    margin-top:18px;
+    background:#06080c;
+    border:1px solid #171d25;
+    border-radius:12px;
+    padding:14px;
+    min-height:52px;
+    color:#9ba5b5;
+    font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Consolas,
+        monospace;
+    font-size:11px;
+    white-space:pre-wrap;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+    padding:35px 0 50px;
+    color:#626c7b;
+    font-size:11px;
+    text-align:center;
+}
+
+footer strong{
+    color:#8b94a3;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1000px){
+
+    .grid-4{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .grid-3{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+}
+
+@media(max-width:700px){
+
+    header{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .status-pill{
+        align-self:flex-start;
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4{
+        grid-template-columns:1fr;
+    }
+
+    .separator-grid{
+        grid-template-columns:1fr;
+    }
+
+    .hero{
+        padding-top:25px;
+    }
+
+    .hero h2{
+        font-size:38px;
+    }
+
+    #waveform{
+        height:130px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+    <div class="brand">
+
+        <div class="logo">
+            E2
+        </div>
+
+        <div>
+            <h1>ENKMINA2 AUDIO LAB</h1>
+            <p>Professional Audio Analysis & Processing</p>
+        </div>
+
+    </div>
+
+    <div class="status-pill">
+        ● PROCESAMIENTO LOCAL
+    </div>
+
+</header>
+
+
+<main>
+
+<section class="hero">
+
+    <h2>
+        Tu audio.
+        <span>Tu laboratorio.</span>
+    </h2>
+
+    <p>
+        Conversión, análisis y procesamiento profesional de audio
+        directamente desde el navegador. En esta V1 los archivos
+        permanecen en tu dispositivo.
+    </p>
+
+</section>
+
+
+<!-- =========================
+     UPLOAD
+========================= -->
+
+<section class="card">
+
+    <div class="card-header">
+
+        <div>
+            <h3>01 · Cargar audio</h3>
+            <p>
+                WAV · MP3 · FLAC · AAC · M4A · OGG
+            </p>
+        </div>
+
+    </div>
+
+    <div class="card-body">
+
+        <div
+            id="dropzone"
+            class="dropzone"
+            tabindex="0"
+            role="button"
+            aria-label="Cargar archivo de audio"
+        >
+
+            <div class="drop-icon">
+                ↑
+            </div>
+
+            <h3>
+                Arrastra tu audio aquí
+            </h3>
+
+            <p>
+                o selecciona un archivo desde tu ordenador
+            </p>
+
+            <button
+                id="selectFile"
+                class="btn primary"
+                type="button"
+            >
+                Seleccionar audio
+            </button>
+
+            <input
+                id="fileInput"
+                class="file-input"
+                type="file"
+                accept="audio/*,.wav,.mp3,.flac,.aac,.m4a,.ogg,.opus"
+            >
+
+        </div>
+
+
+        <div
+            id="fileInfo"
+            class="file-info"
+        >
+
+            <div class="file-title">
+
+                <strong id="fileName">
+                    —
+                </strong>
+
+                <span id="fileSize">
+                    —
+                </span>
+
+            </div>
+
+
+            <audio
+                id="audioPlayer"
+                controls
+                preload="metadata"
+            ></audio>
+
+
+            <div class="wave-container">
+
+                <canvas id="waveform"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ANALYSIS
+========================= -->
+
+<section
+    id="analysisSection"
+    class="card"
+    style="display:none;"
+>
+
+    <div class="card-header">
+
+        <div>
+            <h3>02 · Análisis técnico</h3>
+
+            <p>
+                Información calculada a partir del audio decodificado.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="grid grid-4">
+
+            <div class="metric">
+                <div class="metric-label">
+                    Duración
+                </div>
+
+                <div
+                    id="duration"
+                    class="metric-value"
+                >
+                    —
+                </div>
+            </div>
+
+
+            <div class="metric">
+
+                <div class="metric-label">
+                    Sample Rate
+                </div>
+
+                <div
+                    id="sampleRate"
+                    class="metric-value"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <div class="metric">
+
+                <div class="metric-label">
+                    Canales
+                </div>
+
+                <div
+                    id="channels"
+                    class="metric-value"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <div class="metric">
+
+                <div class="metric-label">
+                    Formato
+                </div>
+
+                <div
+                    id="format"
+                    class="metric-value small"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <div class="metric">
+
+                <div class="metric-label">
+                    Peak
+                </div>
+
+                <div
+                    id="peak"
+                    class="metric-value"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <div class="metric">
+
+                <div class="metric-label">
+                    RMS
+                </div>
+
+                <div
+                    id="rms"
+                    class="metric-value"
+                >
+                    —
+                </div>
+
+            </div>
+
+
+            <div class="metric">
+
+                <div class="metric-label">
+                    LUFS
+                </div>
+
+                <div
+                    id="lufs"
+                    class="metric-value small"
+                >
+                    V1 · N/D
+                </div>
+
+            </div>
+
+
+            <div class="metric">
+
+                <div class="metric-label">
+                    True Peak
+                </div>
+
+                <div
+                    id="truePeak"
+                    class="metric-value small"
+                >
+                    V1 · N/D
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="analysisLog"
+            class="log"
+        >
+            Esperando archivo...
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     CONVERTER
+========================= -->
+
+<section
+    id="converterSection"
+    class="card"
+    style="display:none;"
+>
+
+    <div class="card-header">
+
+        <div>
+
+            <h3>
+                03 · Conversión
+            </h3>
+
+            <p>
+                Exporta una copia procesada localmente.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="grid grid-3">
+
+            <div class="control">
+
+                <label for="outputFormat">
+                    Formato de salida
+                </label>
+
+                <select id="outputFormat">
+
+                    <option value="wav">
+                        WAV PCM
+                    </option>
+
+                    <option value="webm">
+                        WebM / Opus
+                    </option>
+
+                    <option value="ogg">
+                        OGG / Opus
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div
+                id="wavBitDepthControl"
+                class="control"
+            >
+
+                <label for="bitDepth">
+                    Profundidad WAV
+                </label>
+
+                <select id="bitDepth">
+
+                    <option value="16">
+                        16 bit
+                    </option>
+
+                    <option value="24">
+                        24 bit
+                    </option>
+
+                    <option value="32">
+                        32 bit Float
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="control">
+
+                <label>
+                    Procesamiento
+                </label>
+
+                <div
+                    style="
+                    padding:11px 12px;
+                    border:1px solid var(--border);
+                    border-radius:10px;
+                    color:#8ef0ae;
+                    background:rgba(34,197,94,.05);
+                    "
+                >
+                    100% local
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="converter-actions">
+
+            <button
+                id="convertButton"
+                class="btn primary"
+                type="button"
+            >
+                Convertir y descargar
+            </button>
+
+            <button
+                id="resetButton"
+                class="btn"
+                type="button"
+            >
+                Cargar otro audio
+            </button>
+
+        </div>
+
+
+        <div
+            id="converterLog"
+            class="log"
+        >
+            Selecciona un formato para comenzar.
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     AI SEPARATION
+========================= -->
+
+<section
+    id="separatorSection"
+    class="card separator"
+    style="display:none;"
+>
+
+    <div class="separator-content">
+
+        <div class="separator-grid">
+
+            <div>
+
+                <h3>
+                    04 · Separación vocal / instrumental
+                </h3>
+
+                <p>
+                    La arquitectura ya está preparada para conectar
+                    posteriormente un motor real de separación IA,
+                    como Demucs u otro modelo especializado.
+                </p>
+
+
+                <div class="ai-state">
+
+                    <span class="ai-dot"></span>
+
+                    Motor IA:
+                    <strong>
+                        preparado · no conectado en V1
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <button
+                    id="separateButton"
+                    class="btn"
+                    type="button"
+                >
+                    Analizar separación
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="separatorLog"
+            class="log"
+        >
+            La separación IA se conectará en una futura versión.
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     PROCESSING
+========================= -->
+
+<section>
+
+    <div
+        class="grid grid-3"
+    >
+
+        <div class="card feature">
+
+            <div class="feature-icon">
+                ≋
+            </div>
+
+            <h4>
+                EQ
+            </h4>
+
+            <p>
+                Ecualización paramétrica y control tonal.
+            </p>
+
+            <span class="badge">
+                Próximamente
+            </span>
+
+        </div>
+
+
+        <div class="card feature">
+
+            <div class="feature-icon">
+                ◒
+            </div>
+
+            <h4>
+                Compressor
+            </h4>
+
+            <p>
+                Control dinámico para mezcla y mastering.
+            </p>
+
+            <span class="badge">
+                Próximamente
+            </span>
+
+        </div>
+
+
+        <div class="card feature">
+
+            <div class="feature-icon">
+                △
+            </div>
+
+            <h4>
+                Saturation
+            </h4>
+
+            <p>
+                Saturación armónica y carácter analógico.
+            </p>
+
+            <span class="badge">
+                Próximamente
+            </span>
+
+        </div>
+
+
+        <div class="card feature">
+
+            <div class="feature-icon">
+                ◉
+            </div>
+
+            <h4>
+                Limiter
+            </h4>
+
+            <p>
+                Limitador look-ahead y control de picos.
+            </p>
+
+            <span class="badge">
+                Próximamente
+            </span>
+
+        </div>
+
+
+        <div class="card feature">
+
+            <div class="feature-icon">
+                ↗
+            </div>
+
+            <h4>
+                Loudness
+            </h4>
+
+            <p>
+                LUFS, True Peak y normalización profesional.
+            </p>
+
+            <span class="badge">
+                Próximamente
+            </span>
+
+        </div>
+
+
+        <div class="card feature">
+
+            <div class="feature-icon">
+                ✦
+            </div>
+
+            <h4>
+                Mastering
+            </h4>
+
+            <p>
+                Cadena de mastering completa para producción final.
+            </p>
+
+            <span class="badge">
+                Próximamente
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     SYSTEM LOG
+========================= -->
+
+<section class="card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h3>
+                Estado del laboratorio
+            </h3>
+
+            <p>
+                Registro de operaciones.
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="card-body">
+
+        <div
+            id="systemLog"
+            class="log"
+        >
+            ENKMINA2 AUDIO LAB iniciado.
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+    <strong>ENKMINA2 AUDIO LAB</strong>
+
+    <br>
+
+    Conversión · Análisis · Procesamiento de audio
+
+    <br><br>
+
+    V1 · Procesamiento local en navegador
+
+</footer>
+
+</div>
+
+
+<script>
+
+"use strict";
+
+/* =========================================================
+   ENKMINA2 AUDIO LAB
+   SINGLE FILE V1
+========================================================= */
+
+const App = {
+
+    audioContext:null,
+
+    audioBuffer:null,
+
+    audioFile:null,
+
+    objectUrl:null,
+
+    mediaRecorder:null,
+
+    recorderChunks:[],
+
+    elements:{},
+
+    init(){
+
+        this.cache();
+
+        this.bindEvents();
+
+        this.log(
+            "Sistema preparado. Esperando archivo de audio."
+        );
+
+    },
+
+
+    cache(){
+
+        const ids = [
+
+            "dropzone",
+            "selectFile",
+            "fileInput",
+            "fileInfo",
+            "fileName",
+            "fileSize",
+            "audioPlayer",
+            "waveform",
+
+            "analysisSection",
+            "duration",
+            "sampleRate",
+            "channels",
+            "format",
+            "peak",
+            "rms",
+            "lufs",
+            "truePeak",
+            "analysisLog",
+
+            "converterSection",
+            "outputFormat",
+            "wavBitDepthControl",
+            "bitDepth",
+            "convertButton",
+            "resetButton",
+            "converterLog",
+
+            "separatorSection",
+            "separateButton",
+            "separatorLog",
+
+            "systemLog"
+
+        ];
+
+        ids.forEach(id => {
+
+            this.elements[id] =
+                document.getElementById(id);
+
+        });
+
+    },
+
+
+    bindEvents(){
+
+        const e = this.elements;
+
+
+        e.selectFile.addEventListener(
+            "click",
+            () => e.fileInput.click()
+        );
+
+
+        e.fileInput.addEventListener(
+            "change",
+            event => {
+
+                const file =
+                    event.target.files[0];
+
+                if(file){
+
+                    this.loadFile(file);
+
+                }
+
+            }
+        );
+
+
+        e.dropzone.addEventListener(
+            "dragover",
+            event => {
+
+                event.preventDefault();
+
+                e.dropzone.classList.add(
+                    "dragover"
+                );
+
+            }
+        );
+
+
+        e.dropzone.addEventListener(
+            "dragleave",
+            () => {
+
+                e.dropzone.classList.remove(
+                    "dragover"
+                );
+
+            }
+        );
+
+
+        e.dropzone.addEventListener(
+            "drop",
+            event => {
+
+                event.preventDefault();
+
+                e.dropzone.classList.remove(
+                    "dragover"
+                );
+
+                const file =
+                    event.dataTransfer.files[0];
+
+                if(file){
+
+                    this.loadFile(file);
+
+                }
+
+            }
+        );
+
+
+        e.dropzone.addEventListener(
+            "keydown",
+            event => {
+
+                if(
+                    event.key === "Enter" ||
+                    event.key === " "
+                ){
+
+                    event.preventDefault();
+
+                    e.fileInput.click();
+
+                }
+
+            }
+        );
+
+
+        e.outputFormat.addEventListener(
+            "change",
+            () => {
+
+                const isWav =
+                    e.outputFormat.value === "wav";
+
+                e.wavBitDepthControl.style.display =
+                    isWav ? "flex" : "none";
+
+            }
+        );
+
+
+        e.convertButton.addEventListener(
+            "click",
+            () => this.convert()
+        );
+
+
+        e.resetButton.addEventListener(
+            "click",
+            () => this.reset()
+        );
+
+
+        e.separateButton.addEventListener(
+            "click",
+            () => this.separate()
+        );
+
+    },
+
+
+    async loadFile(file){
+
+        try{
+
+            this.log(
+                `Cargando: ${file.name}`
+            );
+
+
+            if(!this.isAudioFile(file)){
+
+                throw new Error(
+                    "El archivo no parece ser un formato de audio compatible."
+                );
+
+            }
+
+
+            if(file.size > 500 * 1024 * 1024){
+
+                const proceed =
+                    confirm(
+                        "El archivo supera 500 MB. " +
+                        "La decodificación puede consumir bastante memoria. " +
+                        "¿Deseas continuar?"
+                    );
+
+                if(!proceed){
+
+                    return;
+
+                }
+
+            }
+
+
+            this.audioFile = file;
+
+
+            if(this.objectUrl){
+
+                URL.revokeObjectURL(
+                    this.objectUrl
+                );
+
+            }
+
+
+            this.objectUrl =
+                URL.createObjectURL(file);
+
+
+            this.elements.audioPlayer.src =
+                this.objectUrl;
+
+
+            this.elements.fileName.textContent =
+                file.name;
+
+
+            this.elements.fileSize.textContent =
+                this.formatFileSize(file.size);
+
+
+            this.elements.fileInfo.classList.add(
+                "active"
+            );
+
+
+            if(!this.audioContext){
+
+                const AudioContextClass =
+                    window.AudioContext ||
+                    window.webkitAudioContext;
+
+                if(!AudioContextClass){
+
+                    throw new Error(
+                        "Este navegador no soporta Web Audio API."
+                    );
+
+                }
+
+                this.audioContext =
+                    new AudioContextClass();
+
+            }
+
+
+            if(
+                this.audioContext.state === "suspended"
+            ){
+
+                await this.audioContext.resume();
+
+            }
+
+
+            const arrayBuffer =
+                await file.arrayBuffer();
+
+
+            this.log(
+                "Decodificando audio..."
+            );
+
+
+            this.audioBuffer =
+                await this.audioContext.decodeAudioData(
+                    arrayBuffer.slice(0)
+                );
+
+
+            this.showAnalysis();
+
+            this.drawWaveform();
+
+            this.log(
+                "Audio cargado correctamente."
+            );
+
+        }catch(error){
+
+            console.error(error);
+
+            this.log(
+                "ERROR: " +
+                error.message
+            );
+
+            alert(
+                "No se pudo cargar este archivo.\n\n" +
+                error.message +
+                "\n\nAlgunos formatos dependen del soporte del navegador."
+            );
+
+        }
+
+    },
+
+
+    isAudioFile(file){
+
+        const acceptedExtensions = [
+
+            ".wav",
+            ".mp3",
+            ".flac",
+            ".aac",
+            ".m4a",
+            ".ogg",
+            ".opus",
+            ".webm"
+
+        ];
+
+
+        const name =
+            file.name.toLowerCase();
+
+
+        return (
+
+            file.type.startsWith("audio/") ||
+
+            acceptedExtensions.some(
+                ext => name.endsWith(ext)
+            )
+
+        );
+
+    },
+
+
+    showAnalysis(){
+
+        const e = this.elements;
+
+        const buffer =
+            this.audioBuffer;
+
+
+        const duration =
+            buffer.duration;
+
+
+        const sampleRate =
+            buffer.sampleRate;
+
+
+        const channels =
+            buffer.numberOfChannels;
+
+
+        let peak = 0;
+
+        let sumSquares = 0;
+
+        let totalSamples = 0;
+
+
+        for(
+            let channel = 0;
+            channel < channels;
+            channel++
+        ){
+
+            const data =
+                buffer.getChannelData(channel);
+
+
+            for(
+                let i = 0;
+                i < data.length;
+                i++
+            ){
+
+                const sample =
+                    data[i];
+
+
+                const abs =
+                    Math.abs(sample);
+
+
+                if(abs > peak){
+
+                    peak = abs;
+
+                }
+
+
+                sumSquares +=
+                    sample * sample;
+
+                totalSamples++;
+
+            }
+
+        }
+
+
+        const rms =
+            Math.sqrt(
+                sumSquares /
+                Math.max(1,totalSamples)
+            );
+
+
+        const peakDb =
+            this.toDb(peak);
+
+
+        const rmsDb =
+            this.toDb(rms);
+
+
+        e.duration.textContent =
+            this.formatDuration(duration);
+
+
+        e.sampleRate.textContent =
+            `${sampleRate.toLocaleString("es-ES")} Hz`;
+
+
+        e.channels.textContent =
+            channels === 1
+                ? "Mono"
+                : `${channels} canales`;
+
+
+        e.format.textContent =
+            this.detectFormat(
+                this.audioFile
+            );
+
+
+        e.peak.textContent =
+            `${peakDb.toFixed(2)} dBFS`;
+
+
+        e.rms.textContent =
+            `${rmsDb.toFixed(2)} dBFS`;
+
+
+        e.lufs.textContent =
+            "V1 · N/D";
+
+
+        e.truePeak.textContent =
+            "V1 · N/D";
+
+
+        e.analysisLog.textContent =
+`Archivo: ${this.audioFile.name}
+Duración: ${this.formatDuration(duration)}
+Sample Rate: ${sampleRate} Hz
+Canales: ${channels}
+Peak: ${peakDb.toFixed(2)} dBFS
+RMS: ${rmsDb.toFixed(2)} dBFS
+LUFS: reservado para el motor de loudness V2
+True Peak: reservado para el motor de análisis V2`;
+
+
+        e.analysisSection.style.display =
+            "block";
+
+
+        e.converterSection.style.display =
+            "block";
+
+
+        e.separatorSection.style.display =
+            "block";
+
+    },
+
+
+    drawWaveform(){
+
+        const canvas =
+            this.elements.waveform;
+
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+
+        const width =
+            Math.max(
+                600,
+                Math.floor(rect.width)
+            );
+
+
+        const height =
+            Math.max(
+                100,
+                Math.floor(rect.height)
+            );
+
+
+        const dpr =
+            window.devicePixelRatio || 1;
+
+
+        canvas.width =
+            width * dpr;
+
+
+        canvas.height =
+            height * dpr;
+
+
+        const ctx =
+            canvas.getContext("2d");
+
+
+        ctx.setTransform(
+            dpr,
+            0,
+            0,
+            dpr,
+            0,
+            0
+        );
+
+
+        ctx.clearRect(
+            0,
+            0,
+            width,
+            height
+        );
+
+
+        const buffer =
+            this.audioBuffer;
+
+
+        const data =
+            buffer.getChannelData(0);
+
+
+        const mid =
+            height / 2;
+
+
+        const amplitude =
+            height * .42;
+
+
+        const samplesPerPixel =
+            Math.max(
+                1,
+                Math.floor(
+                    data.length / width
+                )
+            );
+
+
+        ctx.strokeStyle =
+            "rgba(139,92,246,.85)";
+
+        ctx.lineWidth = 1;
+
+
+        ctx.beginPath();
+
+
+        for(
+            let x = 0;
+            x < width;
+            x++
+        ){
+
+            const start =
+                x * samplesPerPixel;
+
+
+            const end =
+                Math.min(
+                    data.length,
+                    start + samplesPerPixel
+                );
+
+
+            let min = 1;
+
+            let max = -1;
+
+
+            for(
+                let i = start;
+                i < end;
+                i++
+            ){
+
+                const value =
+                    data[i];
+
+
+                if(value < min){
+
+                    min = value;
+
+                }
+
+
+                if(value > max){
+
+                    max = value;
+
+                }
+
+            }
+
+
+            const y1 =
+                mid + min * amplitude;
+
+
+            const y2 =
+                mid + max * amplitude;
+
+
+            ctx.moveTo(
+                x,
+                y1
+            );
+
+
+            ctx.lineTo(
+                x,
+                y2
+            );
+
+        }
+
+
+        ctx.stroke();
+
+
+        ctx.strokeStyle =
+            "rgba(255,255,255,.08)";
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            mid
+        );
+
+        ctx.lineTo(
+            width,
+            mid
+        );
+
+        ctx.stroke();
+
+    },
+
+
+    async convert(){
+
+        if(!this.audioBuffer){
+
+            alert(
+                "Carga primero un archivo de audio."
+            );
+
+            return;
+
+        }
+
+
+        const format =
+            this.elements.outputFormat.value;
+
+
+        try{
+
+            this.elements.convertButton.disabled =
+                true;
+
+
+            this.elements.converterLog.textContent =
+                "Preparando conversión...";
+
+
+            if(format === "wav"){
+
+                const bits =
+                    Number(
+                        this.elements.bitDepth.value
+                    );
+
+
+                const blob =
+                    this.audioBufferToWav(
+                        this.audioBuffer,
+                        bits
+                    );
+
+
+                const extension =
+                    "wav";
+
+
+                const base =
+                    this.removeExtension(
+                        this.audioFile.name
+                    );
+
+
+                this.download(
+                    blob,
+                    `${base}_ENKMINA2.${extension}`
+                );
+
+
+                this.elements.converterLog.textContent =
+                    `Conversión completada: WAV ${bits} bit.`;
+
+            }
+
+
+            else if(format === "webm"){
+
+                const blob =
+                    await this.recordCompressed(
+                        "audio/webm;codecs=opus"
+                    );
+
+
+                const base =
+                    this.removeExtension(
+                        this.audioFile.name
+                    );
+
+
+                this.download(
+                    blob,
+                    `${base}_ENKMINA2.webm`
+                );
+
+
+                this.elements.converterLog.textContent =
+                    "Conversión completada: WebM / Opus.";
+
+            }
+
+
+            else if(format === "ogg"){
+
+                const mime =
+                    "audio/ogg;codecs=opus";
+
+
+                if(
+                    !window.MediaRecorder ||
+                    !MediaRecorder.isTypeSupported(mime)
+                ){
+
+                    throw new Error(
+                        "Este navegador no admite exportación OGG/Opus mediante MediaRecorder."
+                    );
+
+                }
+
+
+                const blob =
+                    await this.recordCompressed(
+                        mime
+                    );
+
+
+                const base =
+                    this.removeExtension(
+                        this.audioFile.name
+                    );
+
+
+                this.download(
+                    blob,
+                    `${base}_ENKMINA2.ogg`
+                );
+
+
+                this.elements.converterLog.textContent =
+                    "Conversión completada: OGG / Opus.";
+
+            }
+
+        }catch(error){
+
+            console.error(error);
+
+            this.elements.converterLog.textContent =
+                "ERROR: " +
+                error.message;
+
+        }finally{
+
+            this.elements.convertButton.disabled =
+                false;
+
+        }
+
+    },
+
+
+    audioBufferToWav(buffer,bits){
+
+        const channels =
+            buffer.numberOfChannels;
+
+
+        const sampleRate =
+            buffer.sampleRate;
+
+
+        const format =
+            bits === 32 ? 3 : 1;
+
+
+        const bytesPerSample =
+            bits / 8;
+
+
+        const blockAlign =
+            channels *
+            bytesPerSample;
+
+
+        const dataLength =
+            buffer.length *
+            blockAlign;
+
+
+        const bufferLength =
+            44 +
+            dataLength;
+
+
+        const arrayBuffer =
+            new ArrayBuffer(
+                bufferLength
+            );
+
+
+        const view =
+            new DataView(
+                arrayBuffer
+            );
+
+
+        this.writeString(
+            view,
+            0,
+            "RIFF"
+        );
+
+
+        view.setUint32(
+            4,
+            36 + dataLength,
+            true
+        );
+
+
+        this.writeString(
+            view,
+            8,
+            "WAVE"
+        );
+
+
+        this.writeString(
+            view,
+            12,
+            "fmt "
+        );
+
+
+        view.setUint32(
+            16,
+            16,
+            true
+        );
+
+
+        view.setUint16(
+            20,
+            format,
+            true
+        );
+
+
+        view.setUint16(
+            22,
+            channels,
+            true
+        );
+
+
+        view.setUint32(
+            24,
+            sampleRate,
+            true
+        );
+
+
+        view.setUint32(
+            28,
+            sampleRate * blockAlign,
+            true
+        );
+
+
+        view.setUint16(
+            32,
+            blockAlign,
+            true
+        );
+
+
+        view.setUint16(
+            34,
+            bits,
+            true
+        );
+
+
+        this.writeString(
+            view,
+            36,
+            "data"
+        );
+
+
+        view.setUint32(
+            40,
+            dataLength,
+            true
+        );
+
+
+        let offset = 44;
+
+
+        for(
+            let i = 0;
+            i < buffer.length;
+            i++
+        ){
+
+            for(
+                let channel = 0;
+                channel < channels;
+                channel++
+            ){
+
+                let sample =
+                    buffer.getChannelData(channel)[i];
+
+
+                sample =
+                    Math.max(
+                        -1,
+                        Math.min(
+                            1,
+                            sample
+                        )
+                    );
+
+
+                if(bits === 16){
+
+                    const value =
+                        sample < 0
+                            ? sample * 0x8000
+                            : sample * 0x7FFF;
+
+
+                    view.setInt16(
+                        offset,
+                        value,
+                        true
+                    );
+
+
+                    offset += 2;
+
+                }
+
+
+                else if(bits === 24){
+
+                    const value =
+                        Math.round(
+                            sample < 0
+                                ? sample * 0x800000
+                                : sample * 0x7FFFFF
+                        );
+
+
+                    view.setUint8(
+                        offset,
+                        value & 0xff
+                    );
+
+
+                    view.setUint8(
+                        offset + 1,
+                        (value >> 8) & 0xff
+                    );
+
+
+                    view.setUint8(
+                        offset + 2,
+                        (value >> 16) & 0xff
+                    );
+
+
+                    offset += 3;
+
+                }
+
+
+                else{
+
+                    view.setFloat32(
+                        offset,
+                        sample,
+                        true
+                    );
+
+
+                    offset += 4;
+
+                }
+
+            }
+
+        }
+
+
+        return new Blob(
+            [arrayBuffer],
+            {
+                type:
+                    bits === 32
+                        ? "audio/wav"
+                        : "audio/wav"
+            }
+        );
+
+    },
+
+
+    async recordCompressed(mime){
+
+        if(!window.MediaRecorder){
+
+            throw new Error(
+                "MediaRecorder no está disponible en este navegador."
+            );
+
+        }
+
+
+        if(
+            !MediaRecorder.isTypeSupported(mime)
+        ){
+
+            throw new Error(
+                `El navegador no soporta ${mime}.`
+            );
+
+        }
+
+
+        const destination =
+            this.audioContext.createMediaStreamDestination();
+
+
+        const source =
+            this.audioContext.createBufferSource();
+
+
+        source.buffer =
+            this.audioBuffer;
+
+
+        source.connect(
+            destination
+        );
+
+
+        const chunks = [];
+
+
+        const recorder =
+            new MediaRecorder(
+                destination.stream,
+                {
+                    mimeType:mime
+                }
+            );
+
+
+        const finished =
+            new Promise(
+                (resolve,reject) => {
+
+                    recorder.ondataavailable =
+                        event => {
+
+                            if(
+                                event.data &&
+                                event.data.size
+                            ){
+
+                                chunks.push(
+                                    event.data
+                                );
+
+                            }
+
+                        };
+
+
+                    recorder.onerror =
+                        event => {
+
+                            reject(
+                                event.error ||
+                                new Error(
+                                    "Error durante la grabación."
+                                )
+                            );
+
+                        };
+
+
+                    recorder.onstop =
+                        () => {
+
+                            resolve(
+                                new Blob(
+                                    chunks,
+                                    {
+                                        type:mime
+                                    }
+                                )
+                            );
+
+                        };
+
+                }
+            );
+
+
+        recorder.start();
+
+
+        source.start();
+
+
+        const duration =
+            this.audioBuffer.duration;
+
+
+        await new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    Math.ceil(
+                        duration * 1000
+                    ) + 250
+                )
+        );
+
+
+        try{
+
+            source.stop();
+
+        }catch{
+
+            /* source already stopped */
+
+        }
+
+
+        recorder.stop();
+
+
+        return await finished;
+
+    },
+
+
+    async separate(){
+
+        if(!this.audioBuffer){
+
+            return;
+
+        }
+
+
+        this.elements.separateButton.disabled =
+            true;
+
+
+        this.elements.separatorLog.textContent =
+            "Preparando arquitectura de separación IA...";
+
+
+        await new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    700
+                )
+        );
+
+
+        this.elements.separatorLog.textContent =
+`Motor de separación IA:
+ESTADO: NO CONECTADO
+
+La interfaz está preparada para integrar
+un modelo real como Demucs.
+
+La futura versión podrá generar:
+
+• Vocals
+• Instrumental
+• Drums
+• Bass
+• Other
+
+El procesamiento IA se añadirá posteriormente
+sin modificar la interfaz principal.`;
+
+
+        this.elements.separateButton.disabled =
+            false;
+
+    },
+
+
+    reset(){
+
+        this.audioFile = null;
+
+        this.audioBuffer = null;
+
+
+        if(this.objectUrl){
+
+            URL.revokeObjectURL(
+                this.objectUrl
+            );
+
+            this.objectUrl = null;
+
+        }
+
+
+        this.elements.audioPlayer.removeAttribute(
+            "src"
+        );
+
+
+        this.elements.audioPlayer.load();
+
+
+        this.elements.fileInput.value =
+            "";
+
+
+        this.elements.fileInfo.classList.remove(
+            "active"
+        );
+
+
+        this.elements.analysisSection.style.display =
+            "none";
+
+
+        this.elements.converterSection.style.display =
+            "none";
+
+
+        this.elements.separatorSection.style.display =
+            "none";
+
+
+        const canvas =
+            this.elements.waveform;
+
+
+        const ctx =
+            canvas.getContext("2d");
+
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        this.log(
+            "Laboratorio reiniciado. Esperando nuevo audio."
+        );
+
+    },
+
+
+    detectFormat(file){
+
+        const name =
+            file.name.toLowerCase();
+
+
+        if(name.endsWith(".wav"))
+            return "WAV";
+
+        if(name.endsWith(".mp3"))
+            return "MP3";
+
+        if(name.endsWith(".flac"))
+            return "FLAC";
+
+        if(name.endsWith(".aac"))
+            return "AAC";
+
+        if(name.endsWith(".m4a"))
+            return "M4A";
+
+        if(name.endsWith(".ogg"))
+            return "OGG";
+
+        if(name.endsWith(".opus"))
+            return "OPUS";
+
+        if(name.endsWith(".webm"))
+            return "WEBM";
+
+
+        return file.type || "Audio";
+
+    },
+
+
+    removeExtension(filename){
+
+        return filename.replace(
+            /\.[^/.]+$/,
+            ""
+        );
+
+    },
+
+
+    formatDuration(seconds){
+
+        if(!Number.isFinite(seconds))
+            return "—";
+
+
+        const mins =
+            Math.floor(
+                seconds / 60
+            );
+
+
+        const secs =
+            Math.floor(
+                seconds % 60
+            );
+
+
+        return `${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`;
+
+    },
+
+
+    formatFileSize(bytes){
+
+        if(bytes < 1024)
+            return `${bytes} B`;
+
+
+        if(bytes < 1024 * 1024)
+            return `${(bytes / 1024).toFixed(1)} KB`;
+
+
+        if(bytes < 1024 * 1024 * 1024)
+            return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+
+
+        return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`;
+
+    },
+
+
+    toDb(value){
+
+        if(value <= 0)
+            return -Infinity;
+
+
+        return 20 *
+            Math.log10(value);
+
+    },
+
+
+    writeString(view,offset,string){
+
+        for(
+            let i = 0;
+            i < string.length;
+            i++
+        ){
+
+            view.setUint8(
+                offset + i,
+                string.charCodeAt(i)
+            );
+
+        }
+
+    },
+
+
+    log(message){
+
+        const time =
+            new Date()
+                .toLocaleTimeString(
+                    "es-ES"
+                );
+
+
+        this.elements.systemLog.textContent +=
+            `\n[${time}] ${message}`;
+
+    }
+
+};
+
+
+/* =========================================================
+   START
+========================================================= */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    () => App.init()
+);
+
+
+/* =========================================================
+   REDRAW WAVEFORM
+========================================================= */
+
+window.addEventListener(
+    "resize",
+    () => {
+
+        if(App.audioBuffer){
+
+            App.drawWaveform();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
