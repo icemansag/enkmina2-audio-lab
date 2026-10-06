@@ -113,10 +113,6 @@
             background-color: #4b5563;
         }
 
-        .btn-danger {
-            background-color: var(--danger);
-        }
-
         input[type="file"] {
             display: none;
         }
@@ -155,13 +151,6 @@
             width: 100%;
             height: 100%;
             display: block;
-        }
-
-        .controls-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
         }
 
         .control-group {
@@ -243,7 +232,7 @@
 <body>
 
     <header>
-        <h1>ENKMINA2 AUDIO LAB <span>V2 Professional Suite</span></h1>
+        <h1>ENKMINA2 AUDIO LAB <span>Mastering Suite V2.1</span></h1>
         <div id="file-info" class="status-bar">Ningún archivo cargado</div>
     </header>
 
@@ -268,11 +257,11 @@
             </div>
 
             <div class="control-group">
-                <label>Modo A/B</label>
+                <label>Modo A/B (Mastering)</label>
                 <button class="btn btn-secondary" id="bypass-btn">Bypass: OFF</button>
             </div>
 
-            <h2>3. Exportar Audio</h2>
+            <h2>3. Exportar Master</h2>
             <div class="control-group">
                 <label>Formato WAV</label>
                 <select id="export-bitdepth">
@@ -281,13 +270,13 @@
                     <option value="32">WAV 32-bit Float</option>
                 </select>
             </div>
-            <button class="btn" id="export-btn" disabled>💾 Exportar Procesado</button>
+            <button class="btn" id="export-btn" disabled>💾 Exportar Master WAV</button>
         </div>
 
-        <!-- Panel Derecho: Visualizador, Medidores y Efectos -->
+        <!-- Panel Derecho: Visualizador, Medidores y Cadena Master -->
         <div class="workspace">
             <div class="panel">
-                <h2>Analizador Espectral y Forma de Onda</h2>
+                <h2>Analizador Espectral y Picos</h2>
                 <div class="visualizer-container">
                     <canvas id="visualizer"></canvas>
                 </div>
@@ -311,9 +300,9 @@
                 </div>
             </div>
 
-            <!-- Cadena de Efectos -->
+            <!-- Cadena de Mastering Profesional -->
             <div class="panel">
-                <h2>Cadena de Mastering & Procesamiento DSP</h2>
+                <h2>Cadena de Mastering DSP</h2>
                 <div class="effects-grid">
                     
                     <!-- EQ Paramétrico -->
@@ -332,24 +321,24 @@
 
                     <!-- Compresor -->
                     <div class="control-group">
-                        <label>Compresor: Threshold <span id="comp-thresh-val">-24 dB</span></label>
-                        <input type="range" id="comp-thresh" min="-60" max="0" step="1" value="-24">
+                        <label>Compresor: Threshold <span id="comp-thresh-val">-20 dB</span></label>
+                        <input type="range" id="comp-thresh" min="-40" max="0" step="1" value="-20">
                     </div>
                     <div class="control-group">
-                        <label>Compresor: Ratio <span id="comp-ratio-val">3:1</span></label>
-                        <input type="range" id="comp-ratio" min="1" max="20" step="0.5" value="3">
+                        <label>Compresor: Ratio <span id="comp-ratio-val">4:1</span></label>
+                        <input type="range" id="comp-ratio" min="1" max="20" step="0.5" value="4">
                     </div>
 
                     <!-- Saturación -->
                     <div class="control-group">
                         <label>Saturación (Drive) <span id="sat-drive-val">1.0</span></label>
-                        <input type="range" id="sat-drive" min="1" max="10" step="0.1" value="1">
+                        <input type="range" id="sat-drive" min="1" max="15" step="0.5" value="1">
                     </div>
 
-                    <!-- Limitador -->
+                    <!-- Limitador / Ganancia Final -->
                     <div class="control-group">
-                        <label>Limiter Ceiling <span id="lim-ceiling-val">-0.3 dB</span></label>
-                        <input type="range" id="lim-ceiling" min="-3" max="0" step="0.1" value="-0.3">
+                        <label>Ganancia de Salida (Output) <span id="out-gain-val">0 dB</span></label>
+                        <input type="range" id="out-gain" min="-12" max="6" step="0.5" value="0">
                     </div>
 
                 </div>
@@ -366,13 +355,13 @@
         let biquadLow = null, biquadMid = null, biquadHigh = null;
         let compressorNode = null;
         let saturationNode = null;
-        let limiterNode = null;
+        let outputGainNode = null;
 
         let isPlaying = false;
         let isBypassed = false;
         let startTime = 0;
         let pauseOffset = 0;
-        let originalFileName = "audio_procesado.wav";
+        let originalFileName = "audio_masterizado.wav";
 
         const fileInput = document.getElementById('audio-file-input');
         const fileInfo = document.getElementById('file-info');
@@ -386,7 +375,6 @@
         const canvas = document.getElementById('visualizer');
         const canvasCtx = canvas.getContext('2d');
 
-        // Inicializar AudioContext al primer gesto del usuario
         function initAudioContext() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -405,7 +393,7 @@
             
             try {
                 audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-                fileInfo.textContent = `Archivo listo: ${file.name} (${audioBuffer.duration.toFixed(2)}s, ${audioBuffer.sampleRate}Hz)`;
+                fileInfo.textContent = `Master listo: ${file.name} (${audioBuffer.duration.toFixed(2)}s, ${audioBuffer.sampleRate}Hz)`;
                 playBtn.disabled = false;
                 stopBtn.disabled = false;
                 exportBtn.disabled = false;
@@ -429,32 +417,38 @@
             sourceNode = audioCtx.createBufferSource();
             sourceNode.buffer = audioBuffer;
 
-            // Nodos de efectos
+            // EQ Paramétrico
             biquadLow = audioCtx.createBiquadFilter();
             biquadLow.type = 'lowshelf';
-            biquadLow.frequency.value = 250;
+            biquadLow.frequency.value = 200;
             biquadLow.gain.value = parseFloat(document.getElementById('eq-low').value);
 
             biquadMid = audioCtx.createBiquadFilter();
             biquadMid.type = 'peaking';
-            biquadMid.frequency.value = 1500;
-            biquadMid.Q.value = 1.0;
+            biquadMid.frequency.value = 1200;
+            biquadMid.Q.value = 1.2;
             biquadMid.gain.value = parseFloat(document.getElementById('eq-mid').value);
 
             biquadHigh = audioCtx.createBiquadFilter();
             biquadHigh.type = 'highshelf';
-            biquadHigh.frequency.value = 4000;
+            biquadHigh.frequency.value = 4500;
             biquadHigh.gain.value = parseFloat(document.getElementById('eq-high').value);
 
+            // Compresor Dinámico
             compressorNode = audioCtx.createDynamicsCompressor();
             compressorNode.threshold.value = parseFloat(document.getElementById('comp-thresh').value);
             compressorNode.ratio.value = parseFloat(document.getElementById('comp-ratio').value);
-            compressorNode.attack.value = 0.003;
-            compressorNode.release.value = 0.25;
+            compressorNode.attack.value = 0.005; // 5ms ataque rápido para pegada
+            compressorNode.release.value = 0.200; // 200ms release musical
 
-            // Nodo de saturación WaveShaper
+            // Saturación Armónica (WaveShaper)
             saturationNode = audioCtx.createWaveShaper();
             updateSaturationCurve(parseFloat(document.getElementById('sat-drive').value));
+
+            // Ganancia de Salida del Master
+            outputGainNode = audioCtx.createGain();
+            const outDb = parseFloat(document.getElementById('out-gain').value);
+            outputGainNode.gain.value = Math.pow(10, outDb / 20);
 
             analyserNode = audioCtx.createAnalyser();
             analyserNode.fftSize = 2048;
@@ -463,18 +457,18 @@
             gainNode.gain.value = parseFloat(masterVolume.value);
 
             if (isBypassed) {
-                // Cadena limpia con bypass de efectos
                 sourceNode.connect(analyserNode);
                 analyserNode.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
             } else {
-                // Cadena completa de mastering
+                // Conexión en cadena de mastering: Fuente -> EQ -> Compresor -> Saturación -> Output Gain -> Analizador -> Volumen -> Salida
                 sourceNode.connect(biquadLow);
                 biquadLow.connect(biquadMid);
                 biquadMid.connect(biquadHigh);
                 biquadHigh.connect(compressorNode);
                 compressorNode.connect(saturationNode);
-                saturationNode.connect(analyserNode);
+                saturationNode.connect(outputGainNode);
+                outputGainNode.connect(analyserNode);
                 analyserNode.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
             }
@@ -492,7 +486,7 @@
             const deg = Math.PI / 180;
             for (let i = 0; i < n_samples; ++i) {
                 let x = (i * 2) / n_samples - 1;
-                curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+                curve[i] = ((3 + k * 2) * x * 20 * deg) / (Math.PI + k * Math.abs(x) * 1.5);
             }
             saturationNode.curve = curve;
         }
@@ -535,7 +529,7 @@
 
         bypassBtn.addEventListener('click', () => {
             isBypassed = !isBypassed;
-            bypassBtn.textContent = `Bypass: ${isBypassed ? 'ON' : 'OFF'}`;
+            bypassBtn.textContent = `Bypass: ${isBypassed ? 'ON (Original)' : 'OFF (Mastered)'}`;
             bypassBtn.style.background = isBypassed ? 'var(--success)' : '#374151';
             if (isPlaying) {
                 const currentPos = audioCtx.currentTime - startTime;
@@ -546,7 +540,7 @@
             }
         });
 
-        // Controles de efectos en tiempo real
+        // Eventos de controles de mastering en tiempo real
         document.getElementById('eq-low').addEventListener('input', (e) => {
             document.getElementById('eq-low-val').textContent = `${e.target.value} dB`;
             if (biquadLow) biquadLow.gain.value = parseFloat(e.target.value);
@@ -571,11 +565,16 @@
             document.getElementById('sat-drive-val').textContent = `${e.target.value}`;
             updateSaturationCurve(parseFloat(e.target.value));
         });
+        document.getElementById('out-gain').addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            document.getElementById('out-gain-val').textContent = `${val > 0 ? '+' : ''}${val} dB`;
+            if (outputGainNode) {
+                outputGainNode.gain.value = Math.pow(10, val / 20);
+            }
+        });
 
-        // Analizador visual
         function visualize() {
             if (!isPlaying) return;
-            
             const bufferLength = analyserNode.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
             
@@ -596,10 +595,8 @@
 
                 for (let i = 0; i < bufferLength; i++) {
                     const barHeight = (dataArray[i] / 255) * canvas.height;
-
                     canvasCtx.fillStyle = `rgb(${dataArray[i] + 50}, 130, 246)`;
                     canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-
                     x += barWidth + 1;
                 }
             }
@@ -626,10 +623,10 @@
             document.getElementById('meter-rms').textContent = `${rmsDb.toFixed(1)} dB`;
         }
 
-        // Exportación procesada usando OfflineAudioContext
+        // Exportación offline con toda la cadena de mastering aplicada
         exportBtn.addEventListener('click', async () => {
             if (!audioBuffer) return;
-            exportBtn.textContent = '⏳ Renderizando exportación...';
+            exportBtn.textContent = '⏳ Renderizando Master...';
             exportBtn.disabled = true;
 
             const offlineCtx = new OfflineAudioContext(
@@ -641,28 +638,27 @@
             const source = offlineCtx.createBufferSource();
             source.buffer = audioBuffer;
 
-            // Replicar cadena de efectos en offline context
             const oLow = offlineCtx.createBiquadFilter();
             oLow.type = 'lowshelf';
-            oLow.frequency.value = 250;
+            oLow.frequency.value = 200;
             oLow.gain.value = parseFloat(document.getElementById('eq-low').value);
 
             const oMid = offlineCtx.createBiquadFilter();
             oMid.type = 'peaking';
-            oMid.frequency.value = 1500;
-            oMid.Q.value = 1.0;
+            oMid.frequency.value = 1200;
+            oMid.Q.value = 1.2;
             oMid.gain.value = parseFloat(document.getElementById('eq-mid').value);
 
             const oHigh = offlineCtx.createBiquadFilter();
             oHigh.type = 'highshelf';
-            oHigh.frequency.value = 4000;
+            oHigh.frequency.value = 4500;
             oHigh.gain.value = parseFloat(document.getElementById('eq-high').value);
 
             const oComp = offlineCtx.createDynamicsCompressor();
             oComp.threshold.value = parseFloat(document.getElementById('comp-thresh').value);
             oComp.ratio.value = parseFloat(document.getElementById('comp-ratio').value);
-            oComp.attack.value = 0.003;
-            oComp.release.value = 0.25;
+            oComp.attack.value = 0.005;
+            oComp.release.value = 0.200;
 
             const oSat = offlineCtx.createWaveShaper();
             const amount = parseFloat(document.getElementById('sat-drive').value);
@@ -670,9 +666,13 @@
             const deg = Math.PI / 180;
             for (let i = 0; i < 44100; ++i) {
                 let x = (i * 2) / 44100 - 1;
-                curve[i] = ((3 + amount) * x * 20 * deg) / (Math.PI + amount * Math.abs(x));
+                curve[i] = ((3 + amount * 2) * x * 20 * deg) / (Math.PI + amount * Math.abs(x) * 1.5);
             }
             oSat.curve = curve;
+
+            const oOutGain = offlineCtx.createGain();
+            const outDb = parseFloat(document.getElementById('out-gain').value);
+            oOutGain.gain.value = Math.pow(10, outDb / 20);
 
             if (isBypassed) {
                 source.connect(offlineCtx.destination);
@@ -682,7 +682,8 @@
                 oMid.connect(oHigh);
                 oHigh.connect(oComp);
                 oComp.connect(oSat);
-                oSat.connect(offlineCtx.destination);
+                oSat.connect(oOutGain);
+                oOutGain.connect(offlineCtx.destination);
             }
 
             source.start(0);
@@ -700,17 +701,16 @@
             a.click();
             window.URL.revokeObjectURL(url);
 
-            exportBtn.textContent = '💾 Exportar Procesado';
+            exportBtn.textContent = '💾 Exportar Master WAV';
             exportBtn.disabled = false;
         });
 
-        // Generador de WAV PCM (16, 24 o 32-bit float)
         function bufferToWav(buffer, bitDepth) {
             const numOfChan = buffer.numberOfChannels;
             const sampleRate = buffer.sampleRate;
             const length = buffer.length;
             
-            let bytesPerSample = 2; // 16-bit
+            let bytesPerSample = 2;
             if (bitDepth === 24) bytesPerSample = 3;
             if (bitDepth === 32) bytesPerSample = 4;
 
@@ -728,26 +728,22 @@
                 }
             }
 
-            // RIFF chunk descriptor
             writeString(view, 0, 'RIFF');
             view.setUint32(4, 36 + dataSize, true);
             writeString(view, 8, 'WAVE');
 
-            // fmt sub-chunk
             writeString(view, 12, 'fmt ');
-            view.setUint32(16, 16, true); // SubChunk1Size (16 for PCM)
-            view.setUint32(20, bitDepth === 32 ? 3 : 1, true); // AudioFormat (1 = PCM, 3 = IEEE Float)
+            view.setUint32(16, 16, true);
+            view.setUint32(20, bitDepth === 32 ? 3 : 1, true);
             view.setUint16(22, numOfChan, true);
             view.setUint32(24, sampleRate, true);
             view.setUint32(28, byteRate, true);
             view.setUint16(32, blockAlign, true);
             view.setUint16(34, bitDepth, true);
 
-            // data sub-chunk
             writeString(view, 36, 'data');
             view.setUint32(40, dataSize, true);
 
-            // Escribir muestras de audio intercaladas
             const channels = [];
             for (let i = 0; i < numOfChan; i++) {
                 channels.push(buffer.getChannelData(i));
